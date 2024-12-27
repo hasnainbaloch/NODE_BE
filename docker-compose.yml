@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node_app
+    ports:
+      - "2000:2000" # Map host port 3000 to container port 3000
+    environment:
+      NODE_ENV: development
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: nodedb
+      DATABASE_USER: admin
+      DATABASE_PASSWORD: admin
+    depends_on:
+      - db # Ensure the database starts before the app
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm start
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    ports:
+      - "5434:5432" # Map host port 5434 to container port 5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: nodedb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
